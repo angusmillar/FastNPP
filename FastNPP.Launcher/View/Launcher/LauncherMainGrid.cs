@@ -156,7 +156,15 @@ namespace FastNPP.Launcher.View.Launcher
       LaunchButton.VerticalAlignment = VerticalAlignment.Stretch;
       LaunchButton.Click += new RoutedEventHandler((obj, e) =>
       {
-        LauncherController.LaunchProviderPortal();        
+        try
+        {
+          LauncherController.LaunchProviderPortal();
+        }
+        catch(Exception Exec)
+        {
+          MessageBox.Show($"An Error has occurred when attempting the launch. Exception message is:'{Exec.Message}'");
+        }
+        
       });
      
       Grid.SetRow(LaunchButton, 7);
