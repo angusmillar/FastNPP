@@ -18,8 +18,8 @@ namespace FastNPP.Launcher.View
 
     public void InitializeLayout()
     {
-      Items.Add(new CofigTabItem());
       Items.Add(new LauncherTabItem());
+      Items.Add(new CofigTabItem());      
     }
   }
 }
