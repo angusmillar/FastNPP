@@ -10,7 +10,7 @@ namespace FastNPP.Launcher.ViewModel
   {
     public LauncherVM()
     {
-      GenderList = new List<string>() { "Male", "Female", "Unknown", "Other" };
+      GenderList = new List<string>() { "M", "F", "U", "O" };
     }
 
     public List<string> GenderList { get; private set; }

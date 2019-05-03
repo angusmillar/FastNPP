@@ -14,7 +14,7 @@ namespace FastNPP.Launcher.ViewModel
     public List<HpioCertificateInfo> HpioCertList { get; private set; }
     public ConfigVM()
     {
-      HpioCertList = CertificateSupport.GetNASHCertificateDictonary(StoreName.My, StoreLocation.LocalMachine);      
+      HpioCertList = CertificateSupport.GetNASHCertificateDictonary(StoreName.My, StoreLocation.CurrentUser);      
     }
     
     public ConfigProfile SelectedConfigProfile { get; set; }

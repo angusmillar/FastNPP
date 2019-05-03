@@ -158,7 +158,11 @@ namespace FastNPP.Launcher.View.Launcher
       {
         try
         {
-          LauncherController.LaunchProviderPortal();
+          string response = LauncherController.LaunchProviderPortal();
+          if (!string.IsNullOrWhiteSpace(response))
+          {
+            MessageBox.Show($"The call to the Provider Portal endpoint returned: {response}");
+          }
         }
         catch(Exception Exec)
         {

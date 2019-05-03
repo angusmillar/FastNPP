@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Web.Script.Serialization;
 using FastNPP.Common;
 using RestSharp;
 
@@ -62,8 +63,9 @@ namespace FastNPP.Client
     /// <param name="mcn">One of 3 identifiers that can be used (conditional)</param>
     /// <param name="dva">One of 3 identifiers that can be used (conditional)</param>
     /// <returns>Returns the HTML to go in a WebBrowser window. An Error will return nothing</returns>
-    public string GetAccessToNpp(string hpio, string userId, string dateOfBith, string gender, string family, string ihi, string mcn, string dva)
+    public MhrRestClientResponse GetAccessToNpp(string hpio, string userId, string dateOfBith, string gender, string family, string ihi, string mcn, string dva)
     {
+      var Response = new MhrRestClientResponse();
       // Certificates
       RSA _privateKey = _cert.GetRSAPrivateKey();
       var jwt = JsonWebTokenUtility.GetNppAssertion(_client_id, _privateKey, hpio, userId, dateOfBith, gender, family, ihi, mcn, dva);
@@ -75,11 +77,25 @@ namespace FastNPP.Client
       request.AddParameter("JWT", jwt);
 
       restResponse = _restClient.Execute(request);
-      if (restResponse.StatusCode == HttpStatusCode.OK)
+      Response.HttpStatus = restResponse.StatusCode;
+      if (Response.HttpStatus != HttpStatusCode.OK)
       {
-        return (restResponse.Content);
+        var JsonReturn = new JavaScriptSerializer().Deserialize<JsonContent>(restResponse.Content);
+        Response.Severity = JsonReturn.Severity;
+        Response.Message = JsonReturn.Message;
+        Response.Code = JsonReturn.Code;
+        Response.Content = restResponse.Content;
+        return Response;
       }
-      return null;
+      else
+      {        
+        Response.Severity = string.Empty;
+        Response.Message = string.Empty;
+        Response.Code = string.Empty;
+        Response.Content = restResponse.Content;
+        return Response;
+      }
+      
     }
 
   }

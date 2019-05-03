@@ -33,7 +33,7 @@ namespace FastNPP.Launcher.Controller
       this.LauncherVM = LauncherVM;
     }
 
-    public void LaunchProviderPortal()
+    public string LaunchProviderPortal()
     {
       if (!System.IO.Directory.Exists(LaunchDirectory))
       {
@@ -41,13 +41,21 @@ namespace FastNPP.Launcher.Controller
       }
       ConfigProfileCollection ConfigProfileList = SerializerSupport.DeserializeFrom<ConfigProfileCollection>(ConfigProfileFilePath);
       var CurrentProfile = ConfigProfileList.ProfileList.SingleOrDefault(x => x.Key == ConfigProfileList.SelectedProfileKey);
-      X509Certificate2 Cert = CertificateSupport.GetCertificate(CurrentProfile.CertificateFingerPrint, X509FindType.FindByThumbprint, StoreName.My, StoreLocation.LocalMachine, true);
+      X509Certificate2 Cert = CertificateSupport.GetCertificate(CurrentProfile.CertificateFingerPrint, X509FindType.FindByThumbprint, StoreName.My, StoreLocation.CurrentUser, true);
       MhrRestClient Client = new MhrRestClient(CurrentProfile.Endpoint, CurrentProfile.ClientId, Cert, CurrentProfile.ProductName, CurrentProfile.ProductVersion);
-      string Response = Client.GetAccessToNpp(CurrentProfile.Hpio, CurrentProfile.Hpii, LauncherVM.Dob.ToString("dd-MM-yyyy"), LauncherVM.Gender.ToLower(), LauncherVM.Family, LauncherVM.Ihi, LauncherVM.MedicareNumber, LauncherVM.DvaNumber);      
-      System.IO.StreamWriter sw = new System.IO.StreamWriter(FastPassLauncherHtmlFileName);
-      sw.WriteLine(Response);
-      sw.Close();
-      System.Diagnostics.Process.Start(FastPassLauncherHtmlFileName);
+      MhrRestClientResponse Response = Client.GetAccessToNpp(CurrentProfile.Hpio, CurrentProfile.Hpii, LauncherVM.Dob.ToString("dd-MM-yyyy"), LauncherVM.Gender.ToLower(), LauncherVM.Family, LauncherVM.Ihi, LauncherVM.MedicareNumber, LauncherVM.DvaNumber);
+      if (Response.HttpStatus == System.Net.HttpStatusCode.OK)
+      {
+        System.IO.StreamWriter sw = new System.IO.StreamWriter(FastPassLauncherHtmlFileName);
+        sw.WriteLine(Response.Content);
+        sw.Close();
+        System.Diagnostics.Process.Start(FastPassLauncherHtmlFileName);
+        return string.Empty;
+      }
+      else
+      {
+        return $"{Response.Message}";
+      }
     }
 
     public void SaveProfile()
@@ -185,5 +193,7 @@ namespace FastNPP.Launcher.Controller
       LauncherVM.Ihi = LauncherVM.SelectedLauncherProfile.Ihi;
       LauncherVM.MedicareNumber = LauncherVM.SelectedLauncherProfile.MedicareNumber;
     }
+
+    
   }
 }
