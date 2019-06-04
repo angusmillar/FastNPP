@@ -68,7 +68,8 @@ namespace FastNPP.Client
       var Response = new MhrRestClientResponse();
       // Certificates
       RSA _privateKey = _cert.GetRSAPrivateKey();
-      var jwt = JsonWebTokenUtility.GetNppAssertion(_client_id, _privateKey, hpio, userId, dateOfBith, gender, family, ihi, mcn, dva);
+      var jwt = JsonWebTokenUtility.GetNppAssertion(_client_id, 
+        _privateKey, hpio, userId, dateOfBith, gender, family, ihi, mcn, dva);
 
       var request = new RestRequest("", Method.POST);
       request.AddHeader("Content-Type", "application/x-www-form-urlencoded");

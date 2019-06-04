@@ -43,7 +43,7 @@ namespace FastNPP.Launcher.Controller
       var CurrentProfile = ConfigProfileList.ProfileList.SingleOrDefault(x => x.Key == ConfigProfileList.SelectedProfileKey);
       X509Certificate2 Cert = CertificateSupport.GetCertificate(CurrentProfile.CertificateFingerPrint, X509FindType.FindByThumbprint, StoreName.My, StoreLocation.CurrentUser, true);
       MhrRestClient Client = new MhrRestClient(CurrentProfile.Endpoint, CurrentProfile.ClientId, Cert, CurrentProfile.ProductName, CurrentProfile.ProductVersion);
-      MhrRestClientResponse Response = Client.GetAccessToNpp(CurrentProfile.Hpio, CurrentProfile.Hpii, LauncherVM.Dob.ToString("dd-MM-yyyy"), LauncherVM.Gender.ToLower(), LauncherVM.Family, LauncherVM.Ihi, LauncherVM.MedicareNumber, LauncherVM.DvaNumber);
+      MhrRestClientResponse Response = Client.GetAccessToNpp(CurrentProfile.Hpio, CurrentProfile.Hpii, LauncherVM.Dob.ToString("dd-MM-yyyy"), LauncherVM.Gender, LauncherVM.Family, LauncherVM.Ihi, LauncherVM.MedicareNumber, LauncherVM.DvaNumber);
       if (Response.HttpStatus == System.Net.HttpStatusCode.OK)
       {
         System.IO.StreamWriter sw = new System.IO.StreamWriter(FastPassLauncherHtmlFileName);
